@@ -33,3 +33,7 @@
 
 # Build artefacts
 build/
+out/
+
+# vcpkg
+vcpkg_installed

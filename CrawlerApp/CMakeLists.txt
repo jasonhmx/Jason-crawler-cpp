@@ -9,6 +9,11 @@ add_executable(
 )
 
 target_link_libraries(
+    lib_crawler PUBLIC
+    lexbor
+)
+
+target_link_libraries(
     crawler_app PUBLIC
     lib_crawler
 )
