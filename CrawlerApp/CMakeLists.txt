@@ -3,6 +3,11 @@ add_library(
     src/Crawler.cpp
 )
 
+target_include_directories(
+    lib_crawler PUBLIC
+    ./include
+)
+
 add_executable(
     crawler_app
     src/main.cpp

@@ -37,3 +37,6 @@ out/
 
 # vcpkg
 vcpkg_installed
+
+# vscode
+.vscode
