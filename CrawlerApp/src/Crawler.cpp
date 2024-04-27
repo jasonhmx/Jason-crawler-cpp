@@ -116,6 +116,11 @@ auto Crawler::getUrls(const URL &url) -> std::vector<URL>
 
 auto Crawler::getHostName(const URL &url) -> std::string
 {
-    static const std::string scheme = "http://";
+    static const std::string scheme = "https://";
     return url.substr(0, url.find('/', scheme.length()));
+}
+
+auto Crawler::getResult() -> std::vector<URL>
+{
+    return {visited.begin(), visited.end()};
 }

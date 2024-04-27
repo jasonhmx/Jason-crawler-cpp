@@ -20,6 +20,9 @@ public:
     // TODO: rule of zero on other 5
     void crawl();
     auto getUrls(const URL &url) -> std::vector<URL>;
+    // TODO: move these to private after testing
+    auto getHostName(const URL &url) -> std::string;
+    auto getResult() -> std::vector<URL>;
 
 private:
     const URL startUrl;
@@ -32,8 +35,5 @@ private:
     struct Worker;
     static const int NUMBER_OF_WORKERS = 4;
     int workingCount;
-    // TODO: html parser and http request maker, fascilate getUrls()
     // TODO: write tests and make sure things work
-
-    auto getHostName(const URL &url) -> std::string;
 };
