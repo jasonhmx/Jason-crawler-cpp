@@ -8,14 +8,17 @@ target_include_directories(
     ./include
 )
 
-add_executable(
-    crawler_app
-    src/main.cpp
-)
-
 target_link_libraries(
     lib_crawler PUBLIC
     lexbor
+    cpr
+)
+
+set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
+add_executable(
+    crawler_app
+    src/main.cpp
 )
 
 target_link_libraries(
