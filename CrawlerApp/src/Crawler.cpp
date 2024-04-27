@@ -84,6 +84,36 @@ void Crawler::crawl()
     std::cout << "Crawling finished!" << "\n";
 }
 
+auto Crawler::getUrls(const URL &url) -> std::vector<URL>
+{
+    std::vector<std::string> urls;
+
+    // Make an HTTP GET request to the starting URL
+    cpr::Response response = cpr::Get(cpr::Url{url});
+
+    if (response.status_code != 200)
+    {
+        std::cerr << "Error fetching URL: " << response.status_code << std::endl;
+        return urls;
+    }
+
+    // Parse the HTML content to find URLs
+    std::string htmlContent = response.text;
+    size_t pos = 0;
+    while ((pos = htmlContent.find("href=\"", pos)) != std::string::npos)
+    {
+        pos += 6; // Move past "href=\""
+        size_t endPos = htmlContent.find("\"", pos);
+        if (endPos != std::string::npos)
+        {
+            std::string url = htmlContent.substr(pos, endPos - pos);
+            urls.push_back(url);
+        }
+    }
+
+    return urls;
+}
+
 auto Crawler::getHostName(const URL &url) -> std::string
 {
     static const std::string scheme = "http://";

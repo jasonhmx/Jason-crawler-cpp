@@ -7,6 +7,9 @@
 #include <condition_variable>
 #include <iostream>
 
+#include <cpr/cpr.h>
+#include <lexbor/html/parser.h>
+
 class Crawler
 {
     typedef std::string URL;
@@ -16,6 +19,7 @@ public:
     Crawler(URL url);
     // TODO: rule of zero on other 5
     void crawl();
+    auto getUrls(const URL &url) -> std::vector<URL>;
 
 private:
     const URL startUrl;
@@ -31,6 +35,5 @@ private:
     // TODO: html parser and http request maker, fascilate getUrls()
     // TODO: write tests and make sure things work
 
-    auto getUrls(const URL &url) -> std::vector<URL>;
     auto getHostName(const URL &url) -> std::string;
 };
