@@ -20,5 +20,17 @@ int main()
     {
         std::cout << url << "\n";
     }
+
+    std::cout << "\n";
+    std::cout << "\n";
+
+    std::cout << "List of url request errors:" << "\n";
+    for (auto &[errorCode, urls] : crawler.getErrorLog())
+    {
+        for (auto &url : urls)
+        {
+            std::cout << "Error " << errorCode << ": " << url << "\n";
+        }
+    }
     return 0;
 }

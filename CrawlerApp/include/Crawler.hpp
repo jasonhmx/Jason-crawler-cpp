@@ -6,9 +6,9 @@
 #include <thread>
 #include <condition_variable>
 #include <iostream>
+#include <unordered_map>
 
 #include <cpr/cpr.h>
-#include <lexbor/html/parser.h>
 
 class Crawler
 {
@@ -23,6 +23,7 @@ public:
     // TODO: move these to private after testing
     auto getHostName(const URL &url) -> std::string;
     auto getResult() -> std::vector<URL>;
+    auto getErrorLog() -> std::unordered_map<long, std::vector<URL>> &;
 
 private:
     const URL startUrl;
@@ -30,6 +31,7 @@ private:
     std::unordered_set<URL> visited;
     std::queue<URL> urlQueue;
     std::vector<std::thread> threadPool;
+    std::unordered_map<long, std::vector<URL>> errorLog;
     std::mutex mtx;
     std::condition_variable cv;
     struct Worker;

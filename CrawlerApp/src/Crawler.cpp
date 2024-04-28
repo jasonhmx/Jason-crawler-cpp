@@ -93,7 +93,8 @@ auto Crawler::getUrls(const URL &url) -> std::vector<URL>
 
     if (response.status_code != 200)
     {
-        std::cerr << "Error fetching URL: " << response.status_code << std::endl;
+        std::unique_lock lock{mtx};
+        errorLog[response.status_code].push_back(url);
         return urls;
     }
 
@@ -123,4 +124,9 @@ auto Crawler::getHostName(const URL &url) -> std::string
 auto Crawler::getResult() -> std::vector<URL>
 {
     return {visited.begin(), visited.end()};
+}
+
+auto Crawler::getErrorLog() -> std::unordered_map<long, std::vector<URL>> &
+{
+    return errorLog;
 }
