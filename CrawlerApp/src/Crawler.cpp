@@ -84,17 +84,15 @@ void Crawler::crawl()
     {
         t.join();
     }
-    std::cout << "Crawling finished!" << "\n";
 }
 
 auto Crawler::getUrls(const URL &url) -> std::vector<URL>
 {
-    std::vector<std::string> urls;
+    std::vector<URL> urls;
+    cpr::Response response = cpr::Get(cpr::Url{url});
 
-    // Make an HTTP GET request to the starting URL
-    cpr::Response response = cpr::Get(cpr::Url{ url });
-
-    if (response.status_code != 200) {
+    if (response.status_code != 200)
+    {
         std::unique_lock lock{ mtx };
         errorLog[response.status_code].push_back(url);
         return urls;
@@ -102,19 +100,45 @@ auto Crawler::getUrls(const URL &url) -> std::vector<URL>
 
     // Parse the HTML content to find URLs
     std::string htmlContent = response.text;
+#ifdef HREF_ONLY
     size_t pos = 0;
-    while ((pos = htmlContent.find("href=\"", pos)) != std::string::npos) {
+    while ((pos = htmlContent.find("href=\"", pos)) != std::string::npos)
+    {
         pos += 6; // Move past "href=\""
         size_t endPos = htmlContent.find("\"", pos);
-        if (endPos != std::string::npos) {
+        if (endPos != std::string::npos)
+        {
             std::string potentialUrl = htmlContent.substr(pos, endPos - pos);
             // Check if the URL starts with "http://" or "https://"
-            if (potentialUrl.substr(0, 7) == "http://" || potentialUrl.substr(0, 8) == "https://") {
+            if (potentialUrl.substr(0, 7) == "http://" || potentialUrl.substr(0, 8) == "https://")
+            {
                 urls.push_back(potentialUrl);
             }
         }
     }
+#else
+    const std::regex urlRegex(R"(href\s*=\s*(['"]?)(.*?)\1)");
+    std::smatch match;
+    std::string baseUrl = url;
 
+    std::string::const_iterator searchStart(htmlContent.cbegin());
+    while (std::regex_search(searchStart, htmlContent.cend(), match, urlRegex))
+    {
+        std::string potentialUrl = match[2];
+
+        if (potentialUrl.find("http://") == 0 || potentialUrl.find("https://") == 0)
+        {
+            urls.emplace_back(potentialUrl);
+        }
+        else
+        {
+            // Resolve relative URLs against the base URL
+            urls.emplace_back(URL(baseUrl + "/" + potentialUrl));
+        }
+
+        searchStart = match.suffix().first;
+    }
+#endif
     return urls;
 }
 

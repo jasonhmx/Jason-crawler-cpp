@@ -1,5 +1,6 @@
 set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
+add_compile_definitions(HREF_ONLY)
 
 add_library(
     lib_crawler
