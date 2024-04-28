@@ -3,34 +3,36 @@
 
 int main()
 {
-    std::string url("adamondra.com");
-    std::cout << "Program start" << "\n";
-    Crawler crawler(url);
-    std::cout << "Host name: " << crawler.getHostName(url) << "\n";
-    auto urls = crawler.getUrls(url);
-    for (auto &url : urls)
+    std::string url;
+    std::cout << "Enter the URL to crawl: ";
+    std::cin >> url;
+    try
     {
-        std::cout << url << "\n";
-    }
+        Crawler crawler(url);
+        std::cout << "URL valid. Crawling in progress." << "\n";
+        std::cout << "See list of crawled URLs below:" << "\n";
+        crawler.crawl();
+        std::cout << "Crawling finished!" << "\n";
 
-    std::cout << "Now the crawling part" << "\n";
-    crawler.crawl();
+        std::cout << "\n";
 
-    for (auto &url : crawler.getResult())
-    {
-        std::cout << url << "\n";
-    }
-
-    std::cout << "\n";
-    std::cout << "\n";
-
-    std::cout << "List of url request errors:" << "\n";
-    for (auto &[errorCode, urls] : crawler.getErrorLog())
-    {
-        for (auto &url : urls)
+        auto errorLog = crawler.getErrorLog();
+        if (!errorLog.empty())
         {
-            std::cout << "Error " << errorCode << ": " << url << "\n";
+            std::cout << "List of url request errors:" << "\n";
+            for (auto &[errorCode, urls] : errorLog)
+            {
+                for (auto &url : urls)
+                {
+                    std::cout << "Error " << errorCode << ": " << url << "\n";
+                }
+            }
         }
+        return 0;
     }
-    return 0;
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+        return -1;
+    }
 }
