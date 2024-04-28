@@ -9,7 +9,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_subdirectory(CrawlerApp)
 add_subdirectory(CrawlerTest)
-add_subdirectory(lexbor)
 
 # Integrate google test
 include(FetchContent)

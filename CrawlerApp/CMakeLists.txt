@@ -10,7 +10,6 @@ target_include_directories(
 
 target_link_libraries(
     lib_crawler PUBLIC
-    lexbor
     cpr
 )
 
