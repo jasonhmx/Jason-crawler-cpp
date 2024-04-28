@@ -1,4 +1,6 @@
 #include "Crawler.hpp"
+#include <exception>
+#include <regex>
 
 struct Crawler::Worker
 {
@@ -53,7 +55,7 @@ struct Crawler::Worker
     }
 };
 
-Crawler::Crawler(URL url) : startUrl(std::move(url)),
+Crawler::Crawler(URL url) : startUrl(getActualUrl(url)),
                             urlQueue({startUrl}),
                             visited({startUrl}),
                             hostName(getHostName(startUrl))
@@ -89,11 +91,10 @@ auto Crawler::getUrls(const URL &url) -> std::vector<URL>
     std::vector<std::string> urls;
 
     // Make an HTTP GET request to the starting URL
-    cpr::Response response = cpr::Get(cpr::Url{url});
+    cpr::Response response = cpr::Get(cpr::Url{ url });
 
-    if (response.status_code != 200)
-    {
-        std::unique_lock lock{mtx};
+    if (response.status_code != 200) {
+        std::unique_lock lock{ mtx };
         errorLog[response.status_code].push_back(url);
         return urls;
     }
@@ -101,14 +102,15 @@ auto Crawler::getUrls(const URL &url) -> std::vector<URL>
     // Parse the HTML content to find URLs
     std::string htmlContent = response.text;
     size_t pos = 0;
-    while ((pos = htmlContent.find("href=\"", pos)) != std::string::npos)
-    {
+    while ((pos = htmlContent.find("href=\"", pos)) != std::string::npos) {
         pos += 6; // Move past "href=\""
         size_t endPos = htmlContent.find("\"", pos);
-        if (endPos != std::string::npos)
-        {
-            std::string url = htmlContent.substr(pos, endPos - pos);
-            urls.push_back(url);
+        if (endPos != std::string::npos) {
+            std::string potentialUrl = htmlContent.substr(pos, endPos - pos);
+            // Check if the URL starts with "http://" or "https://"
+            if (potentialUrl.substr(0, 7) == "http://" || potentialUrl.substr(0, 8) == "https://") {
+                urls.push_back(potentialUrl);
+            }
         }
     }
 
@@ -117,8 +119,19 @@ auto Crawler::getUrls(const URL &url) -> std::vector<URL>
 
 auto Crawler::getHostName(const URL &url) -> std::string
 {
-    static const std::string scheme = "https://";
-    return url.substr(0, url.find('/', scheme.length()));
+    // Regular expression to extract the scheme and host
+    std::regex urlRegex("(https?://[^/]+/)");
+
+    std::smatch match;
+    if (std::regex_search(url, match, urlRegex))
+    {
+        return match[1].str();
+    }
+    else
+    {
+        // Return empty string if no match found
+        return "";
+    }
 }
 
 auto Crawler::getResult() -> std::vector<URL>
@@ -129,4 +142,14 @@ auto Crawler::getResult() -> std::vector<URL>
 auto Crawler::getErrorLog() -> std::unordered_map<long, std::vector<URL>> &
 {
     return errorLog;
+}
+
+auto Crawler::getActualUrl(const URL &url) -> URL
+{
+    auto response = cpr::Get(cpr::Url{url});
+    if (response.status_code != 200)
+    {
+        throw std::runtime_error("HTTP request failed with status code: " + std::to_string(response.status_code));
+    }
+    return response.url.str();
 }

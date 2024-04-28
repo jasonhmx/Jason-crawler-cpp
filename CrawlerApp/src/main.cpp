@@ -3,7 +3,7 @@
 
 int main()
 {
-    std::string url("https://www.adamondra.com/");
+    std::string url("adamondra.com");
     std::cout << "Program start" << "\n";
     Crawler crawler(url);
     std::cout << "Host name: " << crawler.getHostName(url) << "\n";

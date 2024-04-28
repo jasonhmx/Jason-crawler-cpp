@@ -24,6 +24,7 @@ public:
     auto getHostName(const URL &url) -> std::string;
     auto getResult() -> std::vector<URL>;
     auto getErrorLog() -> std::unordered_map<long, std::vector<URL>> &;
+    auto getActualUrl(const URL& url) -> URL;
 
 private:
     const URL startUrl;
