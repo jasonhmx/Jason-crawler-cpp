@@ -37,6 +37,7 @@ struct Crawler::Worker
                 std::unique_lock lock{crawler.mtx};
                 if (!crawler.visited.contains(url))
                 {
+                    std::cout << url << "\n";
                     crawler.visited.emplace(url);
                     crawler.urlQueue.emplace(url);
                     crawler.cv.notify_all();
