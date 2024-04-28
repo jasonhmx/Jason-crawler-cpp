@@ -1,3 +1,6 @@
+set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
+
 add_library(
     lib_crawler
     src/Crawler.cpp
@@ -13,8 +16,6 @@ target_link_libraries(
     cpr
 )
 
-set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
 add_executable(
     crawler_app
     src/main.cpp
